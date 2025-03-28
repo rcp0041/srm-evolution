@@ -1,0 +1,26 @@
+[project]
+name = "srm-evolution"
+version = "2025.03.28"
+description = "Evolutionary design optimization for solid rocket motors."
+authors = [
+    {name = "Ray Patrick", email = "rcp0041@auburn.edu"}
+]
+
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "srm@git+ssh://git@github.com/rcp0041/srm.git",
+    "leap-ec@git+ssh://git@github.com/leap-ec/LEAP.git"
+]
+
+[project.urls]
+Github = "https://github.com/rcp0041/srm-evolution"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["srm-evolution*"]
