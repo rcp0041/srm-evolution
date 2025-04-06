@@ -1,0 +1,22 @@
+run = 1
+
+## Nozzle constraints
+expansion_ratio=8
+ambient_pressure=14.7
+exit_pressure=14.7
+throat_diameter=2.0
+
+## Parameter bounds
+N_bounds = [3,12]
+Ro_bounds = [6,6]
+Ri_bounds = [5.0,5.9]
+Rp_bounds = [4.0,4.9]
+f_bounds = [1.0,0.5]
+epsilon_bounds = [0.1,0.9]
+halfTheta_bounds = [0.6,1.0]
+length_bounds = [24,24]
+
+## Evolution settings
+max_generations = 100
+pop_size = 24
+brood_size = 3

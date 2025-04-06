@@ -11,6 +11,7 @@ dependencies = [
     "numpy",
     "scipy",
     "matplotlib",
+    "toml",
     "srm@git+ssh://git@github.com/rcp0041/srm.git",
     "leap-ec@git+ssh://git@github.com/leap-ec/LEAP.git"
 ]
