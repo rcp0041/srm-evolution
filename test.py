@@ -6,7 +6,7 @@ from leap_ec import ops, util
 from leap_ec.decoder import IdentityDecoder
 from leap_ec.problem import ScalarProblem
 from leap_ec.real_rep.initializers import create_real_vector
-from leap_ec.real_rep.ops import mutate_gaussian
+from leap_ec.real_rep.ops import mutate_gaussian, apply_hard_bounds
 
 
 import numpy as np                     # Math operations
@@ -15,13 +15,15 @@ from srm.materials import propellants  # Dictionary of solid rocket propellants
 from srm.materials import steel        # Dictionary of case materials
 from matplotlib import pyplot as plt   # Plotting library
 import toml                            # For reading config file
+import sys
+
+# run = sys.argv[1]
+run = 6
 
 data = toml.load("./config.toml")
 def get_bounds(key_string):
     key_string = key_string + "_bounds"
     return (data[key_string][0],data[key_string][1])
-
-
 
 def max_pressure(motor,timestep=0.1):
     Y = motor.burn_vector(timestep)
@@ -143,8 +145,7 @@ if __name__ == '__main__':
     material_index_bounds = (0,len(steel)-1)
     bounds = [N_bounds,Ro_bounds,Ri_bounds,Rp_bounds,f_bounds,epsilon_bounds,halfTheta_bounds,length_bounds,propellant_index_bounds,material_index_bounds]
     parents = Individual.create_population(POPULATION_SIZE,
-                                                initialize=create_real_vector(
-                                                    bounds),
+                                                initialize=create_real_vector(bounds),
                                                 decoder=IdentityDecoder(),
                                                 problem=PayloadMassProblem(maximize=True))
     # Evaluate initial population
@@ -158,6 +159,7 @@ if __name__ == '__main__':
                          ops.random_selection,
                          ops.clone,
                          mutate_gaussian(std=.1, expected_num_mutations=1),
+                         # apply_hard_bounds(parents,bounds),
                          ops.evaluate,
                          ops.pool(
                              size=len(parents) * BROOD_SIZE),
@@ -208,16 +210,13 @@ if __name__ == '__main__':
         burn_area[i] = motor.grain.burn_area(time[i])
         mdot[i] = motor.mass_flow_rate(time[i])
         Isp[i] = thrust[i]/(mdot[i]*srm.g0)
-        
-    
-    plotdir = "figures/run{}".format(data['run'])
 
     fig, ax = plt.subplots(figsize=(7, 7), dpi=96)
     ax.plot(time,pressure)
     plt.title("Chamber pressure")
     plt.xlabel("Burn Time (s)")
     plt.ylabel("Pressure (psi)")
-    plt.savefig('{}/pressure.png'.format(plotdir),dpi=100)
+    plt.savefig('results/run{}/run{}-pressure.png'.format(run,run),dpi=100)
     plt.show()
 
     fig, ax = plt.subplots(figsize=(7, 7), dpi=96)
@@ -225,15 +224,15 @@ if __name__ == '__main__':
     plt.title("Thrust")
     plt.xlabel("Burn Time (s)")
     plt.ylabel("Thrust (lbf)")
-    plt.savefig('{}/thrust.png'.format(plotdir),dpi=100)
+    plt.savefig('results/run{}/run{}-thrust.png'.format(run,run),dpi=100)
     plt.show()
 
     fig, ax = plt.subplots(figsize=(7, 7), dpi=96)
     ax.plot(time,Isp)
-    plt.title("Specific Impulse (CP grain)")
+    plt.title("Specific Impulse")
     plt.xlabel("Burn Time (s)")
     plt.ylabel("Isp (s)")
-    plt.savefig('{}/isp.png'.format(plotdir),dpi=100)
+    plt.savefig('results/run{}/run{}-isp.png'.format(run,run),dpi=100)
     plt.show()
 
     # fig, ax = plt.subplots(figsize=(7, 7), dpi=96)
@@ -245,8 +244,8 @@ if __name__ == '__main__':
 
     fig, ax = plt.subplots(figsize=(7, 7), dpi=96)
     ax.plot(time,mdot*srm.g0)
-    plt.title("Mass flow rate (CP grain)")
+    plt.title("Mass flow rate")
     plt.xlabel("Burn Time (s)")
     plt.ylabel("Mdot (lbm/s)")
-    plt.savefig('{}/mdot.png'.format(plotdir),dpi=100)
+    plt.savefig('results/run{}/run{}-mdot.png'.format(run,run),dpi=100)
     plt.show()
