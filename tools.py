@@ -410,7 +410,7 @@ def integrate_motor_flight(motor,powered_flight=True,y0=np.array([0,0,0,0,0,0]),
         elif hasattr(motor,'case'):
             def halt_event(t,y):
                 """ Halt when motor mass goes down to dry mass """
-                return y[4] - motor.initial_mass()
+                return y[4] - motor.empty_mass()
             halt_event.direction = -1
         else:
             def halt_event(t,y):
