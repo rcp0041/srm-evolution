@@ -7,7 +7,7 @@ Created on Wed Apr 23 15:09:56 2025
 """
 
 from leap_ec.multiobjective.problems import MultiObjectiveProblem
-from tools import construct_motor
+from tools import construct_motor, compute_max_altitude
 import numpy as np
 
 class MaxPayload_MinPressure(MultiObjectiveProblem):
@@ -56,3 +56,28 @@ class MaxPayload_MaxTW(MultiObjectiveProblem):
             weight[i] = motor.propellant_mass(burn_distance[i]) + dry_mass
             thrust_weight_ratio[i] = thrust[i]/weight[i]
         return np.array([payload_mass,thrust_weight_ratio])
+
+class MaxPayload_MaxAlt(MultiObjectiveProblem):
+    """
+    Maximizes payload mass and throw height for a vertical launch.
+    """
+    # maximize = [1,1]
+    maximize = [1]
+    def evaluate(self,phenome):
+        motor = construct_motor(phenome)
+        payload_mass = motor.payload_mass()
+        y_max = compute_max_altitude(motor)[1]
+        # return np.array([payload_mass,y_max])
+        return np.array([y_max])
+
+class MaxThrust_MaxAlt(MultiObjectiveProblem):
+    """
+    Maximizes initial thrust and throw height for a vertical launch.
+    """
+    maximize = [1,1]
+    
+    def evaluate(self,phenome):
+        motor = construct_motor(phenome)
+        max_thrust = motor.max_thrust()
+        y_max = compute_max_altitude(motor)[1]
+        return np.array([max_thrust,y_max])
