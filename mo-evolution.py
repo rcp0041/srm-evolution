@@ -6,8 +6,11 @@ GENOME:
     [N, Ro, Ri, Rp, f, epsilon, theta/2, grain_length, prop_i, material_i]
 """
 
-from tools import get_setting, init_bounds, construct_motor, print_genome
+from tools import get_setting, init_bounds, construct_motor, print_genome, create_eom
 from problems import MaxPayload_MinPressure
+from problems import MaxPayload_MaxAlt
+from problems import MaxThrust_MaxAlt
+from tools import plot_motor_flight
 
 from leap_ec.representation import Representation
 from leap_ec.ops import clone, evaluate, pool
@@ -59,14 +62,16 @@ def evolve_multiple_parameters(problem):
         ]
     )
 
-final_pop = evolve_multiple_parameters(MaxPayload_MinPressure)
+final_pop = evolve_multiple_parameters(MaxThrust_MaxAlt)
 
 def fitness_list():
     for individual in final_pop:
         print(individual.fitness)
 
 motor = construct_motor(final_pop[0].genome)
+burn_eom = create_eom(motor)
 print(f"Max pressure: {round(motor.max_pressure(),3)} Payload mass: {round(motor.payload_mass(),3)} Average thrust: {round(motor.avg_thrust(),3)} Max thrust: {round(motor.max_thrust(),3)}")
 if motor.grain.halfTheta < 0:
     print(f"theta/2 = {motor.grain.halfTheta} ... wtf")
 print_genome(final_pop[0].genome)
+plot_motor_flight(motor)

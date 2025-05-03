@@ -11,6 +11,7 @@ Evolutionary design optimization for solid rocket motors.
    `.venv\Scripts\activate` (Windows)
 3. Install the project requirements.
    1. `pip install -e .`
+4. Run a design optimizer, e.g. ./full-cp-sounding-rocket.py.
 
 ## Project Goals
 
